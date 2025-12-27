@@ -4,6 +4,10 @@ namespace constant
     constexpr int WINDOW_WIDTH = 800;
     constexpr int WINDOW_HEIGHT = 600;
 
-    constexpr float MIN_RADIUS = 50.f;
-    constexpr float MAX_RADIUS = 100.f;
+    constexpr float MIN_RADIUS = 5.f;
+    constexpr float MAX_RADIUS = 20.f;
+
+    constexpr float CIRCLE_SPEED = 200.f;
+
+    constexpr float CIRCLE_LIFETIME = 1.f;
 }

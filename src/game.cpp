@@ -14,54 +14,74 @@ Game::Game() : context(std::make_shared<Context>())
 void Game::run()
 {
 
-    sf::RenderWindow window(sf::VideoMode({constant::WINDOW_WIDTH, constant::WINDOW_HEIGHT}), constant::WINDOW_TITLE);
+    sf::Clock clock;
 
-    Circle circle(50.f, sf::Color::Green, {100.f, 100.f});
-    Circle circle2(75.f, sf::Color::Red, {300.f, 200.f});
-    Circle circle3(30.f, sf::Color::Blue, {500.f, 400.f});
-
-    context->shapes.push_back(std::make_unique<Circle>(circle));
-    context->shapes.push_back(std::make_unique<Circle>(circle2));
-    context->shapes.push_back(std::make_unique<Circle>(circle3));
-
-    while (window.isOpen())
+    while (context->window->isOpen())
     {
-        while (const std::optional event = window.pollEvent())
+        while (const std::optional event = context->window->pollEvent())
         {
-            if (event->is<sf::Event::Closed>())
-                window.close();
 
-            if (event->is<sf::Event::KeyPressed>())
+            // close event
+            if (event->is<sf::Event::Closed>())
+                context->window->close();
+
+            // mouse move event
+            if (event->is<sf::Event::MouseMoved>())
             {
-                auto key = event->getIf<sf::Event::KeyPressed>();
-                if (key->code == sf::Keyboard::Key::Space)
-                {
-                    Circle newCircle(
-                        Utils::getRandomRadius(),
-                        Utils::getRandomColor(),
-                        Utils::getRandomPosition());
-                    context->shapes.push_back(std::make_unique<Circle>(newCircle));
-                }
+                sf::Vector2i mousePos = sf::Mouse::getPosition(*context->window);
+                fire(mousePos);
             }
+
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+            {
+                context->shapes.clear();
+            }
+
+            // if (event->is<sf::Event::KeyPressed>())
+            // {
+            //     auto key = event->getIf<sf::Event::KeyPressed>();
+            //     if (key->code == sf::Keyboard::Key::Space)
+            //     {
+            //         float radius = Utils::getRandomRadius();
+            //         Circle newCircle(
+            //             radius,
+            //             Utils::getRandomColor(),
+            //             Utils::getRandomPosition(radius),
+            //             Utils::getRandomVelocity());
+            //         context->shapes.push_back(std::make_unique<Circle>(newCircle));
+            //     }
+            // }
         }
 
-        window.clear(sf::Color::Black);
+        float deltaTime = clock.restart().asSeconds();
+
+        context->window->clear(sf::Color::Black);
 
         for (size_t i = 0; i < context->shapes.size(); ++i)
         {
-            context->shapes[i]->draw(window);
-            context->shapes[i]->update();
+            context->shapes[i]->draw(*context->window);
+            context->shapes[i]->update(deltaTime);
         }
+        // Remove dead entities
+        std::erase_if(context->shapes, [](const auto &e)
+                      { return e->getIsDead(); });
 
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-        // {
+        context->window->display();
+    }
+}
 
-        //     Circle newCircle(
-        //         Utils::getRandomRadius(),
-        //         Utils::getRandomColor(),
-        //         Utils::getRandomPosition());
-        //     context->shapes.push_back(std::make_unique<Circle>(newCircle));
-        // }
-        window.display();
+void Game::fire(sf::Vector2i position)
+{
+
+    int circle_count = 5;
+    for (int i = 0; i < circle_count; ++i)
+    {
+        float radius = Utils::getRandomRadius();
+        Circle newCircle(
+            radius,
+            Utils::getRandomColor(),
+            sf::Vector2f(static_cast<float>(position.x), static_cast<float>(position.y)),
+            Utils::getRandomVelocity());
+        context->shapes.push_back(std::make_unique<Circle>(newCircle));
     }
 }

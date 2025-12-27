@@ -22,11 +22,27 @@ sf::Color Utils::getRandomColor()
     return sf::Color(red(gen), green(gen), blue(gen));
 }
 
-sf::Vector2f Utils::getRandomPosition()
+sf::Vector2f Utils::getRandomPosition(float radius)
+{
+    static std::mt19937 gen(std::random_device{}());
+
+    constexpr float SAFE_PADDING = 2.f;
+
+    std::uniform_real_distribution<float> disX(
+        radius + SAFE_PADDING,
+        constant::WINDOW_WIDTH - radius - SAFE_PADDING);
+
+    std::uniform_real_distribution<float> disY(
+        radius + SAFE_PADDING,
+        constant::WINDOW_HEIGHT - radius - SAFE_PADDING);
+
+    return {disX(gen), disY(gen)};
+}
+
+sf::Vector2f Utils::getRandomVelocity()
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> disX(0, constant::WINDOW_WIDTH);
-    static std::uniform_real_distribution<float> disY(0, constant::WINDOW_HEIGHT);
-    return sf::Vector2f(disX(gen), disY(gen));
+    static std::uniform_real_distribution<float> dis(-1.f, 1.f);
+    return sf::Vector2f(dis(gen), dis(gen));
 }

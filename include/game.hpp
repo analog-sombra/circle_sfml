@@ -25,6 +25,7 @@ private:
 public:
     Game();
     void run();
+    void fire(sf::Vector2i position);
 };
 
 #endif // __GAME_HPP__

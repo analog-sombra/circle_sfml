@@ -5,7 +5,8 @@ namespace Utils
 {
     float getRandomRadius();
     sf::Color getRandomColor();
-    sf::Vector2f getRandomPosition();
+    sf::Vector2f getRandomPosition(float radius);
+    sf::Vector2f getRandomVelocity();
     
 } // namespace Utils
 
